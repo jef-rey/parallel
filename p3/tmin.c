@@ -57,6 +57,7 @@ int main(){
   long double stop_criteria = 0.5E-14;
 
   //TODO: make loop for stopping criteria
+  //comment for testing
 
   
 
