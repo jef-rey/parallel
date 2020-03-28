@@ -56,7 +56,7 @@ long double arte(long double approx_value){
 void print_report(long double approx, long double abs_rel_tru_error){
 
   //printf("the integration result = %.13Le\n", approx);
-  printf("the integration result = %.25Le\n", approx);
+  printf("the integration result = %.13Le\n", approx);
   //USING Le INSTEAD OF e AS e ONLY RESULTS IN WARNINGS WHEN USING LONG DOUBLES
   printf("the absolute relative true error is = %.19Le\n", abs_rel_tru_error);
 
@@ -144,24 +144,13 @@ int binary_search(long double a, long double b, int lower_bound, int upper_bound
 }
 
 int main(){
-  //h = (b - a) / n; // taken directly from book
-  //long double area=(h/2)*(f(local_a) + f(local_b));// area of a single trapezoid
 
-  printf("%LF\n", f(120));
+  //printf("%LF\n", f(120));
 
   // use binary search for random guesses, since brute force is probably a bad
   // guess to start with (being that we were told that in the write up. )
 
   //long double stop_criteria = 0.5E-14;
-
-  //TODO: make loop for stopping criteria
-  //comment for testing
-  //TODO: CLARITY ON WHY WE NEED TO READ IN A AND B FROM STDIN IF WE'RE
-  //HARDCODING THIS FOR A PARTICULAR FORMULA.
-  //anything other than a = 0, and b = 120 will result in a different
-  //true_value
-  //ALSO -- for [R]eporting, are we supposed to be printing the _absolute_
-  //relative true error, or the relative true error, or the true error
 
   /*
    * absolute relative true error is:
