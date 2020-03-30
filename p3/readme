@@ -1,0 +1,49 @@
+Jeff Anderson
+CSCI 551 - p3
+
+I ran my program with the values ` 0 120 400000000 ` and I got 
+tmin = 20908204
+I used that value for all the runs for ptrap.
+
+I originally didn't know where to begin searching for tmin, so I kept playing
+around with the [R]eporting function. I found some very good values for ARTE,
+but they were well well well under what was needed for the given stopping
+criteria (which I kept thinking about is 'close enough'). 
+Using R with 0 120 40000000 you get 1.13e-15, so I knew that I had room to play
+around with numbers. I kept tossing numbers out lower and lower until I got in
+the general neighborhood. I knew when I got to the [S] functionality that the
+value of tmin would be ~20e+06.
+
+I started by correctly converting the function that was given in the writeup. 
+After that, I wrote the approx_area function, with great help from Peter
+Pacheco's book 'Introduction to Parallel Programming'.
+
+
+I use binary search for random guesses, since brute forece is a bad guess to
+start with (especially being that we were told that in the write up).
+
+this is my jumbled mind attempting to explain how my binary search works:
+given a starting t value, if the approx using t has an ARTE <= stopping
+criteria, then its likely that t is probably too big. 
+so then you need to look at the midpoint below t. mid = 1 - (t - 1) / 2
+keep searching recursively like that.
+once you go a step down, now you have a new inclusive upper bound.
+
+if the original t is too ssmall, then you have to keep doubling everything,
+until you find an ARTE that is <= stopping criteria.
+then you have a new upper bound, and a lower bound (the last t you tried).
+the new bounds will be > old lower bound, but might be <= upper bound.
+at which point, its the same search criteria as the case above. ^^
+
+------
+
+I used a lot of helper functions to make my main() as streamlined as possible.
+I have an ARTE function that will just return ARTE.
+find_UB() and search() both help with binary_search(). 
+report() and print_report() both act to make the code easier to read and to
+streamline the main() function.
+
+It took me a while to get my head wrapped around the concept of the project.
+I had to go back and review some calculus notes, so this project was kind of
+a double attack, where I had to recall my knowledge of caclulus and then try to
+figure out how to translate that into C code. 
