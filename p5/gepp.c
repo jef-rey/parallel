@@ -59,7 +59,6 @@ void pivot(int n, double* A, double* b, int diag){
 
 void forward_elim(int n, double* A, double* b){
   //want to solve for the x[n-1] variable and the A[n-1] row
-
   //using the ith row to eliminate the ith item from the jth row
   for( int i = 0; i < n; i++){
     pivot(n, A, b, i);
@@ -112,17 +111,10 @@ int main(int argc, char ** argv){
   double *b;
   double* b_orig;
   double *x;
-  //double A[n*n+jn]; // matrix of doubles
-  //A = (double)calloc(n*n, sizeof(double));
   A = (double*)malloc(n*n*sizeof(double));
-  //A_orig = (double)malloc(n*n, sizeof(double));
   A_orig = (double*) malloc(n*n*sizeof(double));
-  //double A_orig[n*n+jn]; // for Lnorm and printing
-  //double b[n]; // vector of doubles 
-  //double b_orig[n]; // for Lnorm and printing
   b =  (double*) malloc(n*sizeof(double));
   b_orig =  (double*) malloc(n*sizeof(double)); //for Lnorm and printing
-  //double x[n]; // vector 
   x = (double*)malloc(n* sizeof(double));// unknown variables
 
   if (n <11){
