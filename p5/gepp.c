@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 
 double L2norm(int n, double* A, double* b, double* x){
 
@@ -29,12 +30,15 @@ double L2norm(int n, double* A, double* b, double* x){
   return sqrt(squares_sum);
 }
 
-void pivot(int n, double* A, double* b, int diag){
+void pivot(int n, double* A, double* b, int diag ){
+  int i;
   
   double greatest_val = 0;
   int row_with_greatest_elem = diag;
   
-  for (int i = diag; i < n; i++){
+/*#pragma omp parallel for num_threads(thread_count) \
+  private(i) shared(n, A, b, diag) */
+  for (/*int*/ i = diag; i < n; i++){
     double abs_elem = fabs(A[i*n+diag]);
     if (abs_elem > greatest_val){
       greatest_val = abs_elem;
@@ -42,8 +46,10 @@ void pivot(int n, double* A, double* b, int diag){
     }
   }
 
-  //swap rows
-  for (int i = diag; i < n; i++){
+  //swap rows in A column
+/*#pragma omp parallel for num_threads(thread_count) \
+  private(i) shared(n, A, b, diag)*/
+  for (/*int*/ i = diag; i < n; i++){
     double tmp = A[diag*n+i];
     A[diag*n+i] = A[row_with_greatest_elem*n+i];
     A[row_with_greatest_elem*n+i] = tmp;
@@ -57,12 +63,18 @@ void pivot(int n, double* A, double* b, int diag){
 
 }
 
-void forward_elim(int n, double* A, double* b){
+void forward_elim(int n, double* A, double* b ){
   //want to solve for the x[n-1] variable and the A[n-1] row
+
   //using the ith row to eliminate the ith item from the jth row
   for( int i = 0; i < n; i++){
+    //pivot(n, A, b, i, thread_count);
     pivot(n, A, b, i);
+#   pragma omp parallel for 
     for (int j = i+1; j < n; j++){
+//      if(omp_get_thread_num() == 0){
+//        printf("number of threads = %d\n", omp_get_num_threads());
+//            }
       double scaling_factor = (A[j*n+i] / A[i*n+i]);
       for(int k = i; k < n; k++){
         //everything to the left of the ith item is eliminated already
@@ -73,6 +85,7 @@ void forward_elim(int n, double* A, double* b){
     //gauss
     //use row[i] to eliminate variable[1][2] in all rows > i
   }
+
 }
 
 void back_substitution(int n, double* A, double* b, double* x){
@@ -97,12 +110,19 @@ int main(int argc, char ** argv){
 
   int n;
   if (argc != 2){
-    printf("too many or too few args");
+    printf("./gepp <size of n>\n ");
+    // this is more a relic of testing, since we ran this using the sbatch
+    // system
     exit(1);
   }
 
 
   n = atoi(argv[1]);
+  
+
+  double start, end;
+
+  start = omp_get_wtime();
 
   srand48(time(0));
 
@@ -111,7 +131,8 @@ int main(int argc, char ** argv){
   double *b;
   double* b_orig;
   double *x;
-  A = (double*)malloc(n*n*sizeof(double));
+
+  A = (double*)malloc(n*n*sizeof(double)); // matrix of doubles of size n
   A_orig = (double*) malloc(n*n*sizeof(double));
   b =  (double*) malloc(n*sizeof(double));
   b_orig =  (double*) malloc(n*sizeof(double)); //for Lnorm and printing
@@ -160,7 +181,12 @@ int main(int argc, char ** argv){
   forward_elim(n, A, b);
   back_substitution(n, A, b, x);
 
+
   double norm = L2norm(n, A_orig, b_orig, x);
+
+  end = omp_get_wtime();
+
+  printf("elapsed time = %f seconds\n",  end - start);
 
   if (n < 11){
     for (int i = 0; i < n; i++){
